@@ -12,15 +12,24 @@ mvn clean package
 
 echo ""
 echo "Creating native installer..."
+
+# Choose icon per platform: macOS (.icns), Linux (.png)
+OS_NAME=$(uname -s)
+ICON_OPT="--icon icons/dev_tools_suite.png"
+if [ "$OS_NAME" = "Darwin" ]; then
+  ICON_OPT="--icon icons/dev_tools_suite.icns"
+fi
+
 jpackage \
   --input target \
-  --name "Jasypt UI" \
-  --main-jar jasypt-ui-1.0.0-executable.jar \
-  --main-class com.jasypt.ui.JasyptGUI \
+  --name "Dev Tools Suite" \
+  --main-jar dev-tools-suite-1.0.0-executable.jar \
+  --main-class com.devtoolssuite.ui.DevToolsSuiteGUI \
+  $ICON_OPT \
   --type app-image \
   --app-version 1.0.0 \
-  --description "Jasypt AES-GCM Encryption/Decryption Tool" \
-  --vendor "Jasypt UI" \
+  --description "AES-GCM Encryption/Decryption Tool" \
+  --vendor "Dev Tools Suite" \
   --dest target/installer
 
 echo ""

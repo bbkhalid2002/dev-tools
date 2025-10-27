@@ -44,5 +44,6 @@ bin/
 build/
 out/
 .claude/
-jasypt-ui/
+# Old scratch folder (removed)
+# jasypt-ui/
 nul

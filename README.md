@@ -1,6 +1,6 @@
-# Jasypt UI - AES-GCM Encryption/Decryption GUI
+# Dev Tools Suite - AES-GCM Encryption/Decryption GUI
 
-A Java Swing GUI application for encrypting and decrypting text using Jasypt AES-GCM encryption.
+A Java Swing GUI application for encrypting and decrypting text using AES-GCM encryption.
 
 ## Features
 
@@ -26,8 +26,8 @@ mvn clean package
 ```
 
 This will create files in the `target` directory:
-- `jasypt-ui-1.0.0.jar` - Regular JAR
-- `jasypt-ui-1.0.0-executable.jar` - Executable JAR with all dependencies
+- `dev-tools-suite-1.0.0.jar` - Regular JAR
+- `dev-tools-suite-1.0.0-executable.jar` - Executable JAR with all dependencies
 
 ### Building Portable Executables
 
@@ -47,7 +47,7 @@ build-exe.bat
 mvn clean package
 ```
 
-This creates `target/jasypt-ui.exe` - a Windows executable that can be distributed to users.
+This creates `target/dev-tools-suite.exe` - a Windows executable that can be distributed to users.
 
 **Pros:**
 - Small file size (wraps the JAR)
@@ -72,9 +72,9 @@ build-jpackage.bat
 ```bash
 mvn clean package
 jpackage --input target \
-  --name "Jasypt UI" \
-  --main-jar jasypt-ui-1.0.0-executable.jar \
-  --main-class com.jasypt.ui.JasyptGUI \
+   --name "Dev Tools Suite" \
+   --main-jar dev-tools-suite-1.0.0-executable.jar \
+   --main-class com.devtoolssuite.ui.DevToolsSuiteGUI \
   --type exe \
   --win-shortcut \
   --win-menu \
@@ -99,18 +99,18 @@ This creates a native installer in `target/installer/` with a bundled Java runti
 
 ### Option 1: Run with Maven
 ```bash
-mvn compile exec:java -Dexec.mainClass="com.jasypt.ui.JasyptGUI"
+mvn compile exec:java -Dexec.mainClass="com.devtoolssuite.ui.DevToolsSuiteGUI"
 ```
 
 ### Option 2: Run the executable JAR
 ```bash
-java -jar target/jasypt-ui-1.0.0-executable.jar
+java -jar target/dev-tools-suite-1.0.0-executable.jar
 ```
 
 ### Option 3: Run the Windows .exe
 ```bash
 # Simply double-click the .exe file, or:
-target\jasypt-ui.exe
+target\dev-tools-suite.exe
 ```
 
 ### Option 4: Install and run using jpackage installer
@@ -140,7 +140,7 @@ target\jasypt-ui.exe
 
 ## Configuration
 
-The application uses the exact configuration from jasypt-logic.txt:
+The application uses the same encryption configuration that was previously documented:
 - **Secret Key Iterations**: 1000
 - **Default Algorithm**: PBKDF2WithHmacSHA256
 - **Encryption Mode**: AES-GCM (via SimpleGCMStringEncryptor)
@@ -152,17 +152,16 @@ The application uses the exact configuration from jasypt-logic.txt:
 - Spring Context - Version 5.3.31
 
 ## Project Structure
-
 ```
-jasypt-ui/
+dev-tools-suite/
 ├── src/
 │   └── main/
 │       └── java/
 │           └── com/
-│               └── jasypt/
+│               └── devtoolssuite/
 │                   └── ui/
-│                       ├── JasyptGUI.java          # Main GUI application
-│                       └── JasyptEncryptor.java    # Encryption utility class
+│                       ├── DevToolsSuiteGUI.java       # Main GUI application
+│                       └── DevToolsSuiteEncryptor.java # Encryption utility class
 ├── pom.xml                                         # Maven configuration
 ├── build-exe.bat                                   # Windows script to build .exe
 ├── build-exe.sh                                    # Linux/Mac script to build .exe

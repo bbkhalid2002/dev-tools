@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "========================================"
-echo "Building Jasypt UI Executable"
+echo "Building Dev Tools Suite Executable"
 echo "========================================"
 echo ""
 
@@ -18,8 +18,8 @@ echo "Build Complete!"
 echo "========================================"
 echo ""
 echo "Output files:"
-echo "  - JAR: target/jasypt-ui-1.0.0-executable.jar"
-echo "  - EXE: target/jasypt-ui.exe"
+echo "  - JAR: target/dev-tools-suite-1.0.0-executable.jar"
+echo "  - EXE: target/dev-tools-suite.exe"
 echo ""
 echo "You can now distribute the .exe file!"
 echo "Note: Users need Java 11 or higher installed."

@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <name>Dev Tools Suite</name>
-    <description>GUI application with developer tools including Jasypt encryption, JSON viewer, text diff, and more</description>
+    <description>GUI application with developer tools including AES-GCM encryption, JSON viewer, text diff, and more</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -67,7 +67,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.jasypt.ui.JasyptGUI</mainClass>
+                            <mainClass>com.devtoolssuite.ui.DevToolsSuiteGUI</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -85,7 +85,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.jasypt.ui.JasyptGUI</mainClass>
+                                    <mainClass>com.devtoolssuite.ui.DevToolsSuiteGUI</mainClass>
                                 </transformer>
                             </transformers>
                             <finalName>${project.artifactId}-${project.version}-executable</finalName>
@@ -107,11 +107,12 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
+                            <icon>icons/dev_tools_suite.ico</icon>
                             <jar>target/${project.artifactId}-${project.version}-executable.jar</jar>
                             <outfile>target/${project.artifactId}.exe</outfile>
                             <downloadUrl>https://www.oracle.com/java/technologies/downloads/</downloadUrl>
                             <classPath>
-                                <mainClass>com.jasypt.ui.JasyptGUI</mainClass>
+                                <mainClass>com.devtoolssuite.ui.DevToolsSuiteGUI</mainClass>
                                 <preCp>anything</preCp>
                             </classPath>
                             <jre>

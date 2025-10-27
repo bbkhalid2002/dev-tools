@@ -8,7 +8,7 @@
 ```bash
 build-exe.bat
 ```
-Output: `target/jasypt-ui.exe` (~2-5 MB)
+Output: `target/dev-tools-suite.exe` (~2-5 MB)
 - Users need Java 11+ installed
 - Small file size
 - Easy to share
@@ -17,7 +17,7 @@ Output: `target/jasypt-ui.exe` (~2-5 MB)
 ```bash
 build-jpackage.bat
 ```
-Output: `target/installer/Jasypt UI-1.0.0.exe` (~50-100 MB)
+Output: `target/installer/Dev Tools Suite-1.0.0.exe` (~50-100 MB)
 - Users DON'T need Java installed
 - Larger file size
 - Professional installer experience
@@ -46,12 +46,12 @@ Linux/Mac:
 ```
 
 **Output:**
-- Location: `target/jasypt-ui.exe`
+- Location: `target/dev-tools-suite.exe`
 - Size: ~2-5 MB
 - Type: .exe wrapper around JAR file
 
 **How to distribute:**
-1. Share the `jasypt-ui.exe` file
+1. Share the `dev-tools-suite.exe` file
 2. User must have Java 11+ installed
 3. Double-click to run
 
@@ -100,14 +100,14 @@ mvn clean package
 ```
 
 **Output:**
-- Location: `target/jasypt-ui-1.0.0-executable.jar`
+- Location: `target/dev-tools-suite-1.0.0-executable.jar`
 - Size: ~2-5 MB
 - Type: Executable JAR
 
 **How to distribute:**
 1. Share the JAR file
 2. User must have Java 11+ installed
-3. Run with: `java -jar jasypt-ui-1.0.0-executable.jar`
+3. Run with: `java -jar dev-tools-suite-1.0.0-executable.jar`
 
 ---
 
@@ -151,9 +151,9 @@ mvn clean package
 ### Windows with custom icon:
 ```bash
 jpackage --input target \
-  --name "Jasypt UI" \
-  --main-jar jasypt-ui-1.0.0-executable.jar \
-  --main-class com.jasypt.ui.JasyptGUI \
+  --name "Dev Tools Suite" \
+  --main-jar dev-tools-suite-1.0.0-executable.jar \
+  --main-class com.devtoolssuite.ui.DevToolsSuiteGUI \
   --type exe \
   --icon path/to/icon.ico \
   --win-dir-chooser \
@@ -167,9 +167,9 @@ jpackage --input target \
 ### Mac with custom icon:
 ```bash
 jpackage --input target \
-  --name "Jasypt UI" \
-  --main-jar jasypt-ui-1.0.0-executable.jar \
-  --main-class com.jasypt.ui.JasyptGUI \
+  --name "Dev Tools Suite" \
+  --main-jar dev-tools-suite-1.0.0-executable.jar \
+  --main-class com.devtoolssuite.ui.DevToolsSuiteGUI \
   --type dmg \
   --icon path/to/icon.icns \
   --mac-package-name "Jasypt UI" \
@@ -180,9 +180,9 @@ jpackage --input target \
 ### Linux .deb package:
 ```bash
 jpackage --input target \
-  --name "jasypt-ui" \
-  --main-jar jasypt-ui-1.0.0-executable.jar \
-  --main-class com.jasypt.ui.JasyptGUI \
+  --name "dev-tools-suite" \
+  --main-jar dev-tools-suite-1.0.0-executable.jar \
+  --main-class com.devtoolssuite.ui.DevToolsSuiteGUI \
   --type deb \
   --linux-shortcut \
   --app-version 1.0.0 \

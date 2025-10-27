@@ -13,15 +13,16 @@ echo.
 echo Creating native Windows installer...
 jpackage ^
   --input target ^
-  --name "Jasypt UI" ^
-  --main-jar jasypt-ui-1.0.0-executable.jar ^
-  --main-class com.jasypt.ui.JasyptGUI ^
+  --name "Dev Tools Suite" ^
+  --main-jar dev-tools-suite-1.0.0-executable.jar ^
+  --main-class com.devtoolssuite.ui.DevToolsSuiteGUI ^
+  --icon icons\dev_tools_suite.ico ^
   --type exe ^
   --win-shortcut ^
   --win-menu ^
   --app-version 1.0.0 ^
-  --description "Jasypt AES-GCM Encryption/Decryption Tool" ^
-  --vendor "Jasypt UI" ^
+  --description "AES-GCM Encryption/Decryption Tool" ^
+  --vendor "Dev Tools Suite" ^
   --dest target/installer
 
 echo.
