@@ -319,8 +319,24 @@ public class JsonDiffTool extends JPanel {
 
 	// JSON Extraction Logic (same as JSON Viewer)
 	private ParseResult extractAndLoadJson(String text) {
+		// First, try to parse the text directly with variants (handles escaped JSON)
+		VariantResult directResult = tryParseVariants(text.trim());
+		if (directResult.data != null) {
+			return new ParseResult(directResult.data, null);
+		}
+
+		// Try to locate the first valid JSON object/array
 		String candidate = extractJsonBlock(text);
 
+		// If no block found with original text, try with unescaped quotes
+		if (candidate == null) {
+			String unescaped = text.replace("\\\"", "\"");
+			if (!unescaped.equals(text)) {
+				candidate = extractJsonBlock(unescaped);
+			}
+		}
+
+		// Fallback: if no block found, try unwrapping quoted string
 		if (candidate == null) {
 			String t = text.trim();
 			if ((t.startsWith("\"") && t.endsWith("\"")) || (t.startsWith("'") && t.endsWith("'"))) {

@@ -207,8 +207,22 @@ public class JsonViewerTool extends JPanel {
 	}
 
 	private ParseResult extractAndLoadJson(String text) {
+		// First, try to parse the text directly with variants (handles escaped JSON)
+		VariantResult directResult = tryParseVariants(text.trim());
+		if (directResult.data != null) {
+			return new ParseResult(directResult.data, null);
+		}
+
 		// Try to locate the first valid JSON object/array
 		String candidate = extractJsonBlock(text);
+
+		// If no block found with original text, try with unescaped quotes
+		if (candidate == null) {
+			String unescaped = text.replace("\\\"", "\"");
+			if (!unescaped.equals(text)) {
+				candidate = extractJsonBlock(unescaped);
+			}
+		}
 
 		// Fallback: if no block found, try unwrapping quoted string
 		if (candidate == null) {
@@ -493,7 +507,10 @@ public class JsonViewerTool extends JPanel {
 
 		ParseResult result = extractAndLoadJson(raw);
 		if (result.error != null || result.data == null) {
-			JOptionPane.showMessageDialog(this, "The provided JSON is invalid.",
+			JOptionPane.showMessageDialog(this,
+				"The provided JSON is invalid.\n\n" +
+				"Tip: If you have escaped JSON like {\\\"key\\\":\\\"value\\\"}, " +
+				"it should now be auto-converted to valid JSON.",
 				"Format JSON", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
