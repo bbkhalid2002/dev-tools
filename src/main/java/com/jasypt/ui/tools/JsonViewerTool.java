@@ -144,7 +144,14 @@ public class JsonViewerTool extends JPanel {
 		rightHeader.add(new JLabel("Paste text here (JSON will be auto-extracted):"), BorderLayout.WEST);
 		JButton formatBtn = new JButton("Format JSON");
 		formatBtn.addActionListener(e -> formatJson());
-		rightHeader.add(formatBtn, BorderLayout.EAST);
+
+		// Right-aligned actions: Complex JSON + Format JSON
+		JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+		JButton complexBtn = new JButton("Complex JSON");
+		complexBtn.addActionListener(e -> parseComplexJson());
+		rightActions.add(complexBtn);
+		rightActions.add(formatBtn);
+		rightHeader.add(rightActions, BorderLayout.EAST);
 		rightPanel.add(rightHeader, BorderLayout.NORTH);
 
 		textArea = new JTextArea();
@@ -204,6 +211,142 @@ public class JsonViewerTool extends JPanel {
 
 		setStatus("Parsed JSON successfully");
 		populateTree(result.data);
+	}
+
+	// Parse multiple JSON blocks from free-form text (e.g., logs) and render
+	private void parseComplexJson() {
+		String raw = textArea.getText();
+		if (raw == null || raw.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Paste text first.", "Complex JSON", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		List<JsonElement> blocks = extractAllJsonBlocks(raw);
+		if (blocks.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "No JSON objects/arrays found in text.", "Complex JSON", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
+		populateTreeMultiple(blocks);
+		setStatus("Parsed " + blocks.size() + " JSON block(s)");
+	}
+
+	// Extracts all top-level balanced {..} and [..] blocks and attempts to parse each using the same variant strategy
+	private List<JsonElement> extractAllJsonBlocks(String text) {
+		List<JsonElement> results = new ArrayList<>();
+		List<String> candidates = new ArrayList<>();
+
+		// Scan for object and array blocks separately to keep ordering by first occurrence
+		List<int[]> spans = new ArrayList<>();
+		spans.addAll(scanAllBalancedBlocks(text, '{', '}'));
+		spans.addAll(scanAllBalancedBlocks(text, '[', ']'));
+
+		// Sort spans by start index to preserve text order
+		spans.sort((a, b) -> Integer.compare(a[0], b[0]));
+
+		// Filter out spans that are completely inside a previously accepted span (keep outermost only)
+		List<int[]> filtered = new ArrayList<>();
+		int lastStart = -1, lastEnd = -1;
+		for (int[] span : spans) {
+			int start = span[0];
+			int end = span[1];
+			if (lastStart <= start && end <= lastEnd) {
+				// contained within previous, skip
+				continue;
+			}
+			filtered.add(span);
+			lastStart = start;
+			lastEnd = end;
+		}
+
+		for (int[] span : filtered) {
+			int start = span[0];
+			int end = span[1];
+			if (start >= 0 && end > start && end <= text.length()) {
+				candidates.add(text.substring(start, end));
+			}
+		}
+
+		// Deduplicate exact duplicates while preserving order
+		Set<String> seen = new HashSet<>();
+		List<String> uniqueCandidates = new ArrayList<>();
+		for (String c : candidates) {
+			if (seen.add(c)) uniqueCandidates.add(c);
+		}
+
+		for (String cand : uniqueCandidates) {
+			VariantResult vr = tryParseVariants(cand);
+			if (vr.data != null) {
+				results.add(vr.data);
+			}
+		}
+
+		// If none found, try looser strategy: tryParseVariants over entire text, then over lines
+		if (results.isEmpty()) {
+			VariantResult vr = tryParseVariants(text.trim());
+			if (vr.data != null) results.add(vr.data);
+			if (results.isEmpty()) {
+				for (String line : text.split("\r?\n")) {
+					vr = tryParseVariants(line.trim());
+					if (vr.data != null) results.add(vr.data);
+				}
+			}
+		}
+
+		return results;
+	}
+
+	private List<int[]> scanAllBalancedBlocks(String text, char openCh, char closeCh) {
+		List<int[]> spans = new ArrayList<>();
+		int n = text.length();
+		for (int i = 0; i < n; i++) {
+			if (text.charAt(i) == openCh) {
+				Integer end = findMatching(text, i, openCh, closeCh);
+				if (end != null) {
+					spans.add(new int[]{i, end + 1});
+					// Skip ahead to avoid nested duplicates starting at same region
+					i = end;
+				}
+			}
+		}
+		return spans;
+	}
+
+	private void populateTreeMultiple(List<JsonElement> items) {
+		clearTree();
+		rowIndex = 0;
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+
+		for (int i = 0; i < items.size(); i++) {
+			JsonElement el = items.get(i);
+			String label = (el.isJsonObject() ? "Object" : el.isJsonArray() ? "Array" : "Value") + " #" + (i + 1);
+			DefaultMutableTreeNode node = new DefaultMutableTreeNode(label);
+			root.add(node);
+			nodeValueMap.put(node, el);
+			rowIndex++;
+
+			// Insert children under this node
+			if (el.isJsonObject()) {
+				JsonObject obj = el.getAsJsonObject();
+				for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+					insertNode(node, entry.getKey(), entry.getValue());
+				}
+			} else if (el.isJsonArray()) {
+				JsonArray arr = el.getAsJsonArray();
+				for (int j = 0; j < arr.size(); j++) {
+					insertNode(node, "[" + j + "]", arr.get(j));
+				}
+			} else {
+				insertNode(node, "value", el);
+			}
+		}
+
+		treeModel.reload();
+
+		// Expand first-level nodes
+		for (int i = 0; i < root.getChildCount(); i++) {
+			tree.expandPath(new TreePath(new Object[]{root, root.getChildAt(i)}));
+		}
 	}
 
 	private ParseResult extractAndLoadJson(String text) {
