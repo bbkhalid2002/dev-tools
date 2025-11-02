@@ -587,15 +587,26 @@ public class JsonViewerTool extends JPanel {
 	}
 
 	private void expandRecursive(TreePath path, boolean expand) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+
+		// When collapsing, collapse children first, then parent
+		// When expanding, expand parent first, then children
+		if (!expand) {
+			for (int i = 0; i < node.getChildCount(); i++) {
+				expandRecursive(path.pathByAddingChild(node.getChildAt(i)), expand);
+			}
+		}
+
 		if (expand) {
 			tree.expandPath(path);
 		} else {
 			tree.collapsePath(path);
 		}
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-		for (int i = 0; i < node.getChildCount(); i++) {
-			expandRecursive(path.pathByAddingChild(node.getChildAt(i)), expand);
+		if (expand) {
+			for (int i = 0; i < node.getChildCount(); i++) {
+				expandRecursive(path.pathByAddingChild(node.getChildAt(i)), expand);
+			}
 		}
 	}
 
